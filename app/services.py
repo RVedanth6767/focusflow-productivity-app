@@ -35,7 +35,7 @@ def start_focus_session(db: Session, payload: schemas.FocusSessionCreate) -> mod
     now = datetime.utcnow()
     session = models.FocusSession(
         task_id=payload.task_id,
-        status="running",
+        status=schemas.SessionStatus.running.value,
         session_length_minutes=payload.session_length_minutes,
         break_length_minutes=payload.break_length_minutes,
         started_at=now,
@@ -61,15 +61,15 @@ def get_session_or_404(db: Session, session_id: int) -> models.FocusSession:
 def pause_focus_session(db: Session, session_id: int) -> models.FocusSession:
     """Pause a running focus session and capture elapsed time."""
     session = get_session_or_404(db, session_id)
-    if session.status == "stopped":
+    if session.status == schemas.SessionStatus.stopped.value:
         raise HTTPException(status_code=400, detail="Stopped sessions cannot be paused.")
-    if session.status == "paused":
+    if session.status == schemas.SessionStatus.paused.value:
         return session
 
     now = datetime.utcnow()
     session.elapsed_seconds += int((now - session.last_resumed_at).total_seconds())
     session.paused_at = now
-    session.status = "paused"
+    session.status = schemas.SessionStatus.paused.value
     db.commit()
     db.refresh(session)
     return session
@@ -78,13 +78,13 @@ def pause_focus_session(db: Session, session_id: int) -> models.FocusSession:
 def resume_focus_session(db: Session, session_id: int) -> models.FocusSession:
     """Resume a paused focus session."""
     session = get_session_or_404(db, session_id)
-    if session.status == "stopped":
+    if session.status == schemas.SessionStatus.stopped.value:
         raise HTTPException(status_code=400, detail="Stopped sessions cannot be resumed.")
-    if session.status == "running":
+    if session.status == schemas.SessionStatus.running.value:
         return session
 
     now = datetime.utcnow()
-    session.status = "running"
+    session.status = schemas.SessionStatus.running.value
     session.last_resumed_at = now
     session.paused_at = None
     db.commit()
@@ -95,18 +95,15 @@ def resume_focus_session(db: Session, session_id: int) -> models.FocusSession:
 def stop_focus_session(db: Session, session_id: int) -> models.FocusSession:
     """Stop a focus session permanently."""
     session = get_session_or_404(db, session_id)
-    if session.status == "stopped":
+    if session.status == schemas.SessionStatus.stopped.value:
         return session
 
     now = datetime.utcnow()
-    if session.status == "running":
+    if session.status == schemas.SessionStatus.running.value:
         session.elapsed_seconds += int((now - session.last_resumed_at).total_seconds())
 
-    was_paused = session.status == "paused"
-    session.status = "stopped"
+    session.status = schemas.SessionStatus.stopped.value
     session.stopped_at = now
-    if was_paused:
-        session.paused_at = now
     db.commit()
     db.refresh(session)
     return session

@@ -8,10 +8,13 @@ from sqlalchemy.orm import Session
 from . import models, schemas, services
 from .database import Base, engine, get_db
 
-# Create database tables automatically at startup for this module.
-Base.metadata.create_all(bind=engine)
+app = FastAPI(title="FocusFlow API", version="1.1.0")
 
-app = FastAPI(title="FocusFlow API", version="1.0.0")
+
+@app.on_event("startup")
+def on_startup() -> None:
+    """Create database tables when the API starts."""
+    Base.metadata.create_all(bind=engine)
 
 
 @app.get("/health")
