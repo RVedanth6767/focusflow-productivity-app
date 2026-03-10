@@ -1,20 +1,35 @@
 """FastAPI application entrypoint for FocusFlow."""
 
+from pathlib import Path
 from typing import List
 
 from fastapi import Depends, FastAPI
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
 from . import models, schemas, services
 from .database import Base, engine, get_db
 
-app = FastAPI(title="FocusFlow API", version="1.1.0")
+app = FastAPI(title="FocusFlow API", version="1.2.0")
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+WEB_DIR = BASE_DIR / "web"
+
+# Serve static frontend assets.
+app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")
 
 
 @app.on_event("startup")
 def on_startup() -> None:
     """Create database tables when the API starts."""
     Base.metadata.create_all(bind=engine)
+
+
+@app.get("/")
+def index() -> FileResponse:
+    """Serve the task management UI."""
+    return FileResponse(WEB_DIR / "index.html")
 
 
 @app.get("/health")

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FocusFlow Task Manager</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <h1>FocusFlow Task Management</h1>
+      <p class="subtitle">Add, complete, delete, prioritize, and link tasks to focus sessions.</p>
+
+      <section class="card">
+        <h2>Add Task</h2>
+        <form id="task-form" class="task-form">
+          <input id="title" placeholder="Task title" required />
+          <input id="description" placeholder="Description" />
+          <select id="priority" required>
+            <option value="High">High</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Low">Low</option>
+          </select>
+          <button type="submit">Add Task</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Tasks</h2>
+        <div id="task-list"></div>
+      </section>
+    </main>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
