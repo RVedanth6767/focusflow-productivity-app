@@ -1,33 +1,85 @@
-🚀 **FocusFlow – Productivity & Focus Management App**
+# FocusFlow Productivity & Focus API
 
-I recently worked on designing **FocusFlow**, a productivity application aimed at improving concentration, task management, and time efficiency.
+This repository now contains a FastAPI module for managing tasks and Pomodoro-style focus sessions.
 
-The goal of this project was to explore **software design principles and system architecture** by developing a structured productivity solution that helps users minimize distractions and maintain focused work sessions.
+## Features implemented
 
-🔹 **Key Features**
-• Task creation and management
-• Focus timer based on the Pomodoro technique
-• Distraction control during work sessions
-• Productivity analytics and session tracking
+- Task management with required fields:
+  - `task_id`
+  - `title`
+  - `description`
+  - `deadline`
+  - `status`
+- Focus timer sessions with defaults:
+  - Focus length: **25 minutes**
+  - Break length: **5 minutes**
+- Timer controls:
+  - Start
+  - Pause
+  - Resume
+  - Stop
+- SQLite persistence for tasks and focus sessions.
 
-🔹 **System Design**
-This project includes **10 UML diagrams** to model the system architecture and workflows:
-Use Case, Class, Activity, Sequence, Communication, State Machine, Component, Deployment, Object, and Package diagrams.
+## Tech stack
 
-🔹 **Architecture**
-The application follows a **Three-Tier Architecture** consisting of:
-• Presentation Layer (User Interface)
-• Application Layer (Business Logic & Services)
-• Data Layer (Database & Storage)
+- FastAPI
+- SQLAlchemy
+- SQLite
 
-📂 This repository contains:
-• Product Requirements Document (PRD)
-• UML diagrams
-• System architecture design
-• Project documentation
+## Run locally
 
-This project helped strengthen my understanding of **software engineering design, UML modeling, and system architecture planning**.
+```bash
+pip install fastapi sqlalchemy uvicorn pydantic httpx
+uvicorn app.main:app --reload
+```
 
-🔗 Repository: *(Add your GitHub link here)*
+## REST API Endpoints
 
-#SoftwareEngineering #UML #SystemDesign #ProductivityApp #GitHubProjects
+### Tasks
+
+- `POST /tasks` → create task
+- `GET /tasks` → list tasks
+- `GET /tasks/{task_id}` → get one task
+
+### Focus Sessions
+
+- `POST /focus-sessions` → start a session
+- `GET /focus-sessions/{session_id}` → get session state
+- `POST /focus-sessions/{session_id}/pause` → pause timer
+- `POST /focus-sessions/{session_id}/resume` → resume timer
+- `POST /focus-sessions/{session_id}/stop` → stop timer
+
+## Example API requests
+
+### 1) Create a task
+
+```bash
+curl -X POST http://127.0.0.1:8000/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Write architecture notes",
+    "description": "Summarize FocusFlow module decisions",
+    "deadline": "2026-12-31T17:00:00",
+    "status": "pending"
+  }'
+```
+
+### 2) Start a focus session
+
+```bash
+curl -X POST http://127.0.0.1:8000/focus-sessions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "task_id": 1,
+    "session_length_minutes": 25,
+    "break_length_minutes": 5
+  }'
+```
+
+### 3) Pause / Resume / Stop
+
+```bash
+curl -X POST http://127.0.0.1:8000/focus-sessions/1/pause
+curl -X POST http://127.0.0.1:8000/focus-sessions/1/resume
+curl -X POST http://127.0.0.1:8000/focus-sessions/1/stop
+```
