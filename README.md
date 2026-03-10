@@ -1,33 +1,85 @@
-🚀 **FocusFlow – Productivity & Focus Management App**
+# FocusFlow Productivity & Focus API + Task UI
 
-I recently worked on designing **FocusFlow**, a productivity application aimed at improving concentration, task management, and time efficiency.
+FocusFlow now includes:
+- A FastAPI backend for task and focus-session APIs.
+- A browser task management UI using **localStorage**.
 
-The goal of this project was to explore **software design principles and system architecture** by developing a structured productivity solution that helps users minimize distractions and maintain focused work sessions.
+## Implemented Task Management Features
 
-🔹 **Key Features**
-• Task creation and management
-• Focus timer based on the Pomodoro technique
-• Distraction control during work sessions
-• Productivity analytics and session tracking
+The UI provides:
+- Add tasks
+- Delete tasks
+- Mark tasks as completed
+- Priority levels: High / Medium / Low
+- Link tasks to focus sessions (stores `focusSessionId` on each task)
 
-🔹 **System Design**
-This project includes **10 UML diagrams** to model the system architecture and workflows:
-Use Case, Class, Activity, Sequence, Communication, State Machine, Component, Deployment, Object, and Package diagrams.
+### Components
+- `TaskList` (state owner + rendering + persistence)
+- `TaskItem` (single task row + actions)
 
-🔹 **Architecture**
-The application follows a **Three-Tier Architecture** consisting of:
-• Presentation Layer (User Interface)
-• Application Layer (Business Logic & Services)
-• Data Layer (Database & Storage)
+Both components are implemented in `web/app.js`.
 
-📂 This repository contains:
-• Product Requirements Document (PRD)
-• UML diagrams
-• System architecture design
-• Project documentation
+## Backend Features
 
-This project helped strengthen my understanding of **software engineering design, UML modeling, and system architecture planning**.
+- Task API with fields:
+  - `task_id`
+  - `title`
+  - `description`
+  - `deadline`
+  - `status`
+- Focus timer session defaults:
+  - 25 minutes focus
+  - 5 minutes break
+- Session controls:
+  - Start / Pause / Resume / Stop
+- SQLite persistence for backend entities.
 
-🔗 Repository: *(Add your GitHub link here)*
+## Run locally
 
-#SoftwareEngineering #UML #SystemDesign #ProductivityApp #GitHubProjects
+```bash
+pip install -r requirements.txt
+python -m uvicorn app.main:app --reload
+```
+
+Open:
+- UI: `http://127.0.0.1:8000/`
+- API docs: `http://127.0.0.1:8000/docs`
+
+## REST API Endpoints
+
+### Tasks
+- `POST /tasks`
+- `GET /tasks`
+- `GET /tasks/{task_id}`
+
+### Focus Sessions
+- `POST /focus-sessions`
+- `GET /focus-sessions/{session_id}`
+- `POST /focus-sessions/{session_id}/pause`
+- `POST /focus-sessions/{session_id}/resume`
+- `POST /focus-sessions/{session_id}/stop`
+
+## Example API Requests
+
+### Create task
+```bash
+curl -X POST http://127.0.0.1:8000/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Write architecture notes",
+    "description": "Summarize FocusFlow module decisions",
+    "deadline": "2026-12-31T17:00:00",
+    "status": "pending"
+  }'
+```
+
+### Start focus session
+```bash
+curl -X POST http://127.0.0.1:8000/focus-sessions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "task_id": 1,
+    "session_length_minutes": 25,
+    "break_length_minutes": 5
+  }'
+```
