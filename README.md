@@ -1,33 +1,38 @@
-🚀 **FocusFlow – Productivity & Focus Management App**
+# FocusFlow Productivity App
 
-I recently worked on designing **FocusFlow**, a productivity application aimed at improving concentration, task management, and time efficiency.
+A lightweight, modular productivity web app implementing focus sessions, task management, and analytics.
 
-The goal of this project was to explore **software design principles and system architecture** by developing a structured productivity solution that helps users minimize distractions and maintain focused work sessions.
+## Features
 
-🔹 **Key Features**
-• Task creation and management
-• Focus timer based on the Pomodoro technique
-• Distraction control during work sessions
-• Productivity analytics and session tracking
+- Pomodoro timer (25m focus / 5m break) with start, pause, and reset
+- Automatic focus ↔ break transitions
+- Task management with High/Medium/Low priority
+- Task completion tracking and association with active focus sessions
+- Productivity dashboard for completed sessions plus daily/weekly focus minutes
+- Basic distraction list with URL checks while focus mode is active
+- Local persistence through browser `localStorage`
 
-🔹 **System Design**
-This project includes **10 UML diagrams** to model the system architecture and workflows:
-Use Case, Class, Activity, Sequence, Communication, State Machine, Component, Deployment, Object, and Package diagrams.
+## Project Structure
 
-🔹 **Architecture**
-The application follows a **Three-Tier Architecture** consisting of:
-• Presentation Layer (User Interface)
-• Application Layer (Business Logic & Services)
-• Data Layer (Database & Storage)
+```text
+components/
+  FocusTimer/
+  TaskList/
+  Dashboard/
+services/
+  timerService.js
+  taskService.js
+  distractionService.js
+utils/
+  sessionTracker.js
+```
 
-📂 This repository contains:
-• Product Requirements Document (PRD)
-• UML diagrams
-• System architecture design
-• Project documentation
+## Run Locally
 
-This project helped strengthen my understanding of **software engineering design, UML modeling, and system architecture planning**.
+Because this app uses ES modules, serve it through a local static server:
 
-🔗 Repository: *(Add your GitHub link here)*
+```bash
+python3 -m http.server 4173
+```
 
-#SoftwareEngineering #UML #SystemDesign #ProductivityApp #GitHubProjects
+Then open `http://localhost:4173` in your browser.

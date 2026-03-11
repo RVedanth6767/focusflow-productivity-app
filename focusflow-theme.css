@@ -1,0 +1,126 @@
+:root {
+  --primary-bg: #0a0a0a;
+  --secondary-bg: #121212;
+  --accent-blue: #007bff;
+  --highlight-blue: #1e90ff;
+  --text-light: #e6e6e6;
+  --muted-text: #94a3b8;
+  --card-border: rgba(0, 123, 255, 0.55);
+  --card-glow: rgba(30, 144, 255, 0.35);
+}
+
+html,
+body {
+  background: var(--primary-bg);
+  color: var(--text-light);
+}
+
+.navbar {
+  background: linear-gradient(90deg, #050505, #101010);
+  border-bottom: 1px solid rgba(0, 123, 255, 0.35);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.navbar .brand {
+  color: var(--text-light);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links a {
+  color: var(--text-light);
+  text-decoration: none;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: var(--highlight-blue);
+  text-shadow: 0 0 12px rgba(30, 144, 255, 0.7);
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #0a0a0a, #001f3f);
+  border: 1px solid rgba(30, 144, 255, 0.2);
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+}
+
+.hero-section p {
+  color: var(--muted-text);
+}
+
+.section-surface {
+  background: var(--secondary-bg);
+}
+
+button,
+.btn {
+  background: linear-gradient(135deg, var(--accent-blue), var(--highlight-blue));
+  color: #fff;
+  border: 1px solid rgba(30, 144, 255, 0.55);
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+button:hover,
+.btn:hover {
+  transform: translateY(-1px) scale(1.03);
+  box-shadow: 0 0 18px rgba(30, 144, 255, 0.45);
+}
+
+.panel,
+.card,
+.task-item,
+.stat-card {
+  background: var(--secondary-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 0 0 rgba(30, 144, 255, 0);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+
+.panel:hover,
+.card:hover,
+.task-item:hover,
+.stat-card:hover {
+  border-color: var(--highlight-blue);
+  box-shadow: 0 0 20px var(--card-glow);
+}
+
+a {
+  color: var(--highlight-blue);
+  transition: color 0.25s ease, text-shadow 0.25s ease;
+}
+
+a:hover {
+  color: var(--accent-blue);
+  text-shadow: 0 0 10px rgba(0, 123, 255, 0.6);
+}
+
+input,
+select {
+  background: #0e1118;
+  color: var(--text-light);
+  border-color: rgba(30, 144, 255, 0.35);
+}
+
+input::placeholder {
+  color: #8a96aa;
+}
+
+.footer {
+  background: #06090f;
+  border-top: 1px solid rgba(0, 123, 255, 0.4);
+  color: var(--muted-text);
+  margin-top: 1.25rem;
+  padding: 1rem 0;
+  text-align: center;
+}

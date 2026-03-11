@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FocusFlow Productivity Module</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="focusflow-theme.css" />
+  </head>
+  <body>
+    <nav class="navbar section-surface">
+      <div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:0.85rem 0;">
+        <div class="brand">FocusFlow</div>
+        <div class="nav-links">
+          <a href="#focus-timer-root">Timer</a>
+          <a href="#dashboard-root">Dashboard</a>
+          <a href="#task-list-root">Tasks</a>
+        </div>
+      </div>
+    </nav>
+
+    <main id="app" class="app-shell container">
+      <header class="hero-section page-header section-surface">
+        <h1>FocusFlow Productivity</h1>
+        <p>Stay focused, finish tasks, and measure your progress.</p>
+      </header>
+      <section class="grid-layout">
+        <div id="focus-timer-root"></div>
+        <div id="dashboard-root"></div>
+        <div id="task-list-root" class="full-width"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">FocusFlow • Dark Futuristic Productivity Theme</div>
+    </footer>
+
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
