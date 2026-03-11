@@ -28,6 +28,6 @@ The application follows a **Three-Tier Architecture** consisting of:
 
 This project helped strengthen my understanding of **software engineering design, UML modeling, and system architecture planning**.
 
-🔗 Repository: *(Add your GitHub link here)*
+🔗 Repository: https://github.com/RVedanth6767/focusflow-productivity-app
 
 #SoftwareEngineering #UML #SystemDesign #ProductivityApp #GitHubProjects
