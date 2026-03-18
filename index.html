@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FocusFlow AI // Classified Productivity System</title>
+    <meta
+      name="description"
+      content="Futuristic neon-blue FocusFlow AI landing page with a classified dashboard aesthetic, live terminal effects, and responsive system modules."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              abyss: '#020617',
+              night: '#0B1120',
+              neon: '#00D4FF',
+              electric: '#3B82F6',
+              panel: '#08101F',
+            },
+            fontFamily: {
+              display: ['Orbitron', 'sans-serif'],
+              sans: ['Inter', 'sans-serif'],
+            },
+            boxShadow: {
+              hud: '0 0 0 1px rgba(255,255,255,.05), 0 0 35px rgba(59,130,246,.16)',
+              neon: '0 0 30px rgba(0,212,255,.35)',
+            },
+            backgroundImage: {
+              'hero-radial': 'radial-gradient(circle at top left, rgba(59,130,246,.18), transparent 30%), radial-gradient(circle at 80% 15%, rgba(0,212,255,.12), transparent 24%), linear-gradient(180deg, #0B1120 0%, #020617 62%, #01030A 100%)',
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body class="bg-hero-radial text-white font-sans antialiased overflow-x-hidden selection:bg-cyan-400/30">
+    <div class="relative min-h-screen isolate">
+      <div id="particles" class="pointer-events-none fixed inset-0 z-0"></div>
+      <div class="grid-overlay pointer-events-none fixed inset-0 z-0"></div>
+      <div class="scanlines pointer-events-none fixed inset-0 z-10"></div>
+      <div class="absolute inset-x-0 top-0 z-0 h-[34rem] bg-[radial-gradient(circle_at_top,rgba(0,212,255,.18),transparent_56%)]"></div>
+
+      <header class="relative z-30 border-b border-white/10 bg-slate-950/70 backdrop-blur-xl">
+        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div class="flex flex-col gap-3 py-3 text-[10px] uppercase tracking-[0.42em] text-cyan-50/65 md:flex-row md:items-center md:justify-between">
+            <div class="flex items-center gap-3">
+              <span class="h-2 w-2 rounded-full bg-neon shadow-[0_0_12px_rgba(0,212,255,.8)]"></span>
+              <span>REC // SYSTEM ACTIVE // CLASSIFIED</span>
+            </div>
+            <div>STATUS: ACTIVE <span class="px-2 text-neon">|</span> DATE: 2026</div>
+          </div>
+
+          <div class="flex flex-col gap-6 py-5 lg:flex-row lg:items-center lg:justify-between">
+            <a href="#hero" class="inline-flex items-center gap-4">
+              <div class="flex h-12 w-12 items-center justify-center rounded-full border border-cyan-300/35 bg-cyan-400/10 shadow-neon">
+                <span class="font-display text-lg tracking-[0.2em] text-neon">FF</span>
+              </div>
+              <div>
+                <p class="font-display text-2xl font-black uppercase tracking-[0.34em] text-white">FocusFlow AI</p>
+                <p class="mt-1 text-[11px] uppercase tracking-[0.42em] text-white/45">Neural Command Interface</p>
+              </div>
+            </a>
+
+            <nav aria-label="Primary navigation">
+              <ul class="flex flex-wrap gap-x-5 gap-y-2 text-xs uppercase tracking-[0.3em] text-slate-200/70">
+                <li><a class="nav-link is-active" href="#hero">I. Dashboard</a></li>
+                <li><a class="nav-link" href="#modules">II. AI Assistant</a></li>
+                <li><a class="nav-link" href="#history">III. History</a></li>
+                <li><a class="nav-link" href="#analytics">IV. Analytics</a></li>
+                <li><a class="nav-link" href="#settings">V. Settings</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main class="relative z-20">
+        <section id="hero" class="mx-auto grid max-w-7xl gap-12 px-4 py-16 sm:px-6 md:py-24 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,.8fr)] lg:items-center lg:px-8">
+          <div class="space-y-8" data-parallax="0.12">
+            <div class="inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-[10px] uppercase tracking-[0.52em] text-cyan-100/70 shadow-hud backdrop-blur-xl">
+              <span class="h-2 w-2 rounded-full bg-neon shadow-[0_0_14px_rgba(0,212,255,.85)]"></span>
+              Chapter Six
+            </div>
+
+            <div class="space-y-5">
+              <p class="text-xs uppercase tracking-[0.5em] text-white/50">AI-POWERED PRODUCTIVITY SYSTEM</p>
+              <div class="space-y-3">
+                <h1 class="hero-title font-display text-5xl font-black uppercase leading-none text-white sm:text-6xl md:text-7xl xl:text-[7.2rem]">
+                  FocusFlow <span class="text-neon">AI</span>
+                </h1>
+                <p class="max-w-4xl text-[11px] uppercase tracking-[0.46em] text-cyan-100/80 sm:text-sm">
+                  AI-POWERED PRODUCTIVITY SYSTEM // REAL-TIME OPTIMIZATION
+                </p>
+              </div>
+              <p class="max-w-2xl text-base leading-8 text-slate-300 sm:text-lg">
+                A next-gen intelligent workflow system designed to enhance focus, automate tasks, and push productivity beyond limits.
+              </p>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+              <div class="rounded-[1.75rem] border border-cyan-400/20 bg-slate-950/65 p-5 shadow-hud backdrop-blur-2xl">
+                <div class="mb-4 flex items-center justify-between border-b border-white/10 pb-3 text-[10px] uppercase tracking-[0.4em] text-white/45">
+                  <span>System Terminal</span>
+                  <span class="text-neon">Live Feed</span>
+                </div>
+                <p class="font-display text-xs uppercase tracking-[0.34em] text-cyan-100/65 sm:text-sm">
+                  &gt; <span id="typed-text"></span><span class="cursor-glow"></span>
+                </p>
+                <div id="log-feed" class="mt-4 space-y-2 text-sm text-cyan-50/75"></div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4 sm:grid-cols-1">
+                <div class="rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 shadow-hud backdrop-blur-xl">
+                  <p class="text-[10px] uppercase tracking-[0.38em] text-cyan-100/55">Focus Sync</p>
+                  <p class="mt-3 font-display text-2xl text-white">99.2%</p>
+                </div>
+                <div class="rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 shadow-hud backdrop-blur-xl">
+                  <p class="text-[10px] uppercase tracking-[0.38em] text-cyan-100/55">Cycle Status</p>
+                  <p class="mt-3 font-display text-2xl text-neon">Stable</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-4">
+              <a href="#modules" class="action-btn action-btn-primary">Access Interface</a>
+              <a href="#analytics" class="action-btn action-btn-secondary">View Analytics</a>
+            </div>
+          </div>
+
+          <aside class="relative" data-parallax="-0.08">
+            <div class="rounded-[2rem] border border-cyan-400/20 bg-slate-950/60 p-6 shadow-hud backdrop-blur-2xl">
+              <div class="mb-6 flex items-start justify-between gap-4">
+                <div>
+                  <p class="text-[10px] uppercase tracking-[0.42em] text-white/45">Classified Node</p>
+                  <h2 class="mt-4 font-display text-2xl uppercase tracking-[0.22em] text-white">Control Matrix</h2>
+                </div>
+                <div class="mt-2 h-12 w-12 rounded-full border border-cyan-300/30 bg-cyan-300/10 shadow-neon"></div>
+              </div>
+
+              <div class="space-y-4">
+                <div class="status-row"><span>Neural Sync</span><span>99.2%</span></div>
+                <div class="status-row"><span>Task Routing</span><span>Auto</span></div>
+                <div class="status-row"><span>Focus Stream</span><span>Stable</span></div>
+              </div>
+
+              <div class="mt-8 grid gap-4 sm:grid-cols-2">
+                <article class="mini-stat">
+                  <p class="mini-stat-label">Live Sessions</p>
+                  <p class="mini-stat-value">12,481</p>
+                </article>
+                <article class="mini-stat">
+                  <p class="mini-stat-label">AI Actions</p>
+                  <p class="mini-stat-value">3.8M</p>
+                </article>
+                <article class="mini-stat sm:col-span-2">
+                  <div class="flex items-center justify-between gap-4">
+                    <p class="mini-stat-label">Cycle Throughput</p>
+                    <p class="text-xs uppercase tracking-[0.3em] text-cyan-100/70">78%</p>
+                  </div>
+                  <div class="mt-3 h-2 overflow-hidden rounded-full bg-white/10">
+                    <div class="h-full w-[78%] rounded-full bg-gradient-to-r from-electric via-neon to-white shadow-neon"></div>
+                  </div>
+                </article>
+              </div>
+
+              <div class="mt-8 rounded-[1.5rem] border border-cyan-400/15 bg-cyan-400/5 p-4">
+                <div class="mb-3 flex items-center justify-between text-[10px] uppercase tracking-[0.4em] text-cyan-100/60">
+                  <span>Signal Graph</span>
+                  <span>Realtime</span>
+                </div>
+                <div class="flex h-28 items-end gap-2">
+                  <span class="bar h-[45%]"></span>
+                  <span class="bar h-[58%]"></span>
+                  <span class="bar h-[36%]"></span>
+                  <span class="bar h-[74%]"></span>
+                  <span class="bar h-[62%]"></span>
+                  <span class="bar h-[88%]"></span>
+                  <span class="bar h-[67%]"></span>
+                  <span class="bar h-[79%]"></span>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section id="modules" class="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+          <div class="mb-10 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p class="text-[10px] uppercase tracking-[0.45em] text-cyan-100/60">Operational Modules</p>
+              <h2 class="mt-3 font-display text-3xl uppercase tracking-[0.18em] text-white md:text-4xl">Mission-Critical Systems</h2>
+            </div>
+            <p class="max-w-2xl text-sm leading-7 text-slate-300">
+              Precision-built modules orchestrate task automation, immersive focus loops, adaptive assistance, and telemetry-rich analytics.
+            </p>
+          </div>
+
+          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+            <article class="system-card">
+              <p class="card-index">01</p>
+              <h3 class="card-title">AI Assistant</h3>
+              <p class="card-body">Context-aware command layer delivering instant summaries, actions, and strategic next steps.</p>
+            </article>
+            <article class="system-card">
+              <p class="card-index">02</p>
+              <h3 class="card-title">Task Engine</h3>
+              <p class="card-body">Autonomous queue management with intelligent prioritization and friction-free execution flows.</p>
+            </article>
+            <article class="system-card">
+              <p class="card-index">03</p>
+              <h3 class="card-title">Focus Timer</h3>
+              <p class="card-body">Deep-work sequencing built with interval automation, signal locking, and cadence control.</p>
+            </article>
+            <article class="system-card">
+              <p class="card-index">04</p>
+              <h3 class="card-title">Analytics</h3>
+              <p class="card-body">High-resolution insight panels tracking output velocity, energy curves, and performance anomalies.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
+          <div class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+            <article id="history" class="info-panel">
+              <p class="panel-kicker">Historical Stream</p>
+              <h3 class="panel-title">Encrypted Activity Timeline</h3>
+              <p class="panel-body">Replay system-level actions across every focus sprint, AI recommendation, and automation event with high-fidelity tracking.</p>
+            </article>
+            <article id="analytics" class="info-panel">
+              <p class="panel-kicker">Telemetry Core</p>
+              <h3 class="panel-title">Performance Signal Intelligence</h3>
+              <p class="panel-body">Surface patterns, deviations, and opportunity zones through clean, technical visual language designed for rapid decisions.</p>
+            </article>
+            <article id="settings" class="info-panel lg:col-span-2">
+              <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
+                <div>
+                  <p class="panel-kicker">Command Settings</p>
+                  <h3 class="panel-title">Adaptive Configuration Layer</h3>
+                  <p class="panel-body">Tune environment variables, behavioral automations, and dashboard focus presets through a minimal classified-system interface.</p>
+                </div>
+                <div class="grid gap-3 sm:grid-cols-3 lg:min-w-[22rem]">
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+                    <p class="text-[10px] uppercase tracking-[0.35em] text-cyan-100/55">Mode</p>
+                    <p class="mt-3 font-display text-xl text-neon">AUTO</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+                    <p class="text-[10px] uppercase tracking-[0.35em] text-cyan-100/55">Shield</p>
+                    <p class="mt-3 font-display text-xl text-white">ON</p>
+                  </div>
+                  <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-center">
+                    <p class="text-[10px] uppercase tracking-[0.35em] text-cyan-100/55">Sync</p>
+                    <p class="mt-3 font-display text-xl text-white">24/7</p>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
