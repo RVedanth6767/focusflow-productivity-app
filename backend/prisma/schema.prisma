@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  done
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+}
+
+enum ChatRole {
+  user
+  assistant
+}
+
+model User {
+  id               String            @id @default(uuid())
+  email            String            @unique
+  passwordHash     String            @map("password_hash")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  tasks            Task[]
+  chatMessages     ChatMessage[]
+  pomodoroSessions PomodoroSession[]
+  usageStats       UsageStat?
+
+  @@map("users")
+}
+
+model Task {
+  id          String            @id @default(uuid())
+  userId      String            @map("user_id")
+  title       String
+  description String?
+  status      TaskStatus        @default(todo)
+  priority    TaskPriority      @default(medium)
+  createdAt   DateTime          @default(now()) @map("created_at")
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chats       ChatMessage[]
+  pomodoros   PomodoroSession[]
+
+  @@index([userId, createdAt])
+  @@unique([id, userId])
+  @@map("tasks")
+}
+
+model ChatMessage {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  taskId    String?   @map("task_id")
+  role      ChatRole
+  content   String
+  createdAt DateTime  @default(now()) @map("created_at")
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task      Task?     @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([userId, taskId, createdAt])
+  @@map("chat_messages")
+}
+
+model PomodoroSession {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  taskId    String?  @map("task_id")
+  duration  Int
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task      Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@unique([id, userId])
+  @@map("pomodoro_sessions")
+}
+
+model UsageStat {
+  id              String @id @default(uuid())
+  userId          String @unique @map("user_id")
+  aiRequestsCount Int    @default(0) @map("ai_requests_count")
+  pomodoroCount   Int    @default(0) @map("pomodoro_count")
+  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("usage_stats")
+}
