@@ -6,6 +6,10 @@ export const redis = new Redis(env.REDIS_URL, {
   lazyConnect: true
 });
 
+redis.on('error', () => {
+  // Redis is optional at runtime; connection errors are handled by graceful fallbacks.
+});
+
 export const safeRedisConnect = async (): Promise<void> => {
   if (redis.status === 'wait') {
     try {
