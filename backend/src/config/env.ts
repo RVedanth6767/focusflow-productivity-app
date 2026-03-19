@@ -10,7 +10,7 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(16),
   JWT_REFRESH_SECRET: z.string().min(16).default('change-me-refresh-secret'),
   REDIS_URL: z.string().min(1),
-  OPENAI_API_KEY: z.string().optional().default(''),
+  GEMINI_API_KEY: z.string().optional().default(''),
   CORS_ORIGIN: z.string().default('*')
 });
 
