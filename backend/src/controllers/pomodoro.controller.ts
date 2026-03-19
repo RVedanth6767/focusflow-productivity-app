@@ -7,6 +7,11 @@ const pomodoroService = new PomodoroService();
 const dashboardService = new DashboardService();
 
 export class PomodoroController {
+  static async status(req: AuthenticatedRequest, res: Response) {
+    const session = await pomodoroService.status(req.user!.userId);
+    res.status(200).json({ success: true, data: session });
+  }
+
   static async start(req: AuthenticatedRequest, res: Response) {
     const session = await pomodoroService.start(req.user!.userId, req.body);
     await dashboardService.invalidate(req.user!.userId);
