@@ -4,6 +4,7 @@ import { chatRouter } from './chat.routes.js';
 import { dashboardRouter } from './dashboard.routes.js';
 import { pomodoroRouter } from './pomodoro.routes.js';
 import { taskRouter } from './task.routes.js';
+import { systemRouter } from './system.routes.js';
 
 export const apiRouter = Router();
 
@@ -12,3 +13,5 @@ apiRouter.use('/tasks', taskRouter);
 apiRouter.use('/chat', chatRouter);
 apiRouter.use('/pomodoro', pomodoroRouter);
 apiRouter.use('/dashboard', dashboardRouter);
+
+apiRouter.use('/system', systemRouter);
