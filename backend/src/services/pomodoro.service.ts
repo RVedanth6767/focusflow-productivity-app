@@ -36,4 +36,8 @@ export class PomodoroService {
     await this.usageStatsRepository.incrementPomodoroUsage(userId);
     return updated;
   }
+
+  status(userId: string) {
+    return this.pomodoroRepository.findActiveByUserId(userId);
+  }
 }

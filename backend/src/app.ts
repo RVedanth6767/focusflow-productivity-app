@@ -21,11 +21,23 @@ export const createApp = () => {
     })
   );
   app.use(express.json({ limit: '1mb' }));
+  app.use((req, _res, next) => {
+    console.log(`[API] ${req.method} ${req.url}`);
+    next();
+  });
   app.use(loggerMiddleware);
   app.use(apiRateLimiter);
 
   app.get('/health', (_req, res) => {
     res.json({ success: true, data: { status: 'ok' } });
+  });
+
+  app.get('/v1/status', (_req, res) => {
+    res.json({
+      success: true,
+      provider: 'Gemini',
+      backend: 'online'
+    });
   });
 
   app.use('/v1', apiRouter);

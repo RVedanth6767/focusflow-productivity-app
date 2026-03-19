@@ -14,6 +14,13 @@ export class PomodoroRepository {
     return prisma.pomodoroSession.findFirst({ where: { id, userId } });
   }
 
+  findActiveByUserId(userId: string): Promise<PomodoroSession | null> {
+    return prisma.pomodoroSession.findFirst({
+      where: { userId, completed: false },
+      orderBy: { createdAt: 'desc' }
+    });
+  }
+
   countCompleted(userId: string): Promise<number> {
     return prisma.pomodoroSession.count({ where: { userId, completed: true } });
   }
