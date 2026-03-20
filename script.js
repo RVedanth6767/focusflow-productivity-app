@@ -268,6 +268,9 @@ function loadAI() {
       chatInputNode.focus();
     }
   }, 350);
+  if (chatInputNode) {
+    chatInputNode.focus();
+  }
 }
 
 function setupChatUi() {
