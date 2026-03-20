@@ -14,6 +14,36 @@ const modelNode = document.querySelector('[data-ai-model]');
 const endpointNode = document.querySelector('[data-ai-endpoint]');
 const keyNode = document.querySelector('[data-ai-key]');
 const notesNode = document.getElementById('ai-status-notes');
+const workspaceNode = document.getElementById('workspace');
+const chatMessagesNode = document.getElementById('chat-messages');
+const chatInputNode = document.getElementById('chat-input');
+const chatSendButton = document.getElementById('chat-send-button');
+const chatLoadButton = document.getElementById('load-ai-button');
+const chatStatusNode = document.getElementById('chat-status');
+const taskFormNode = document.getElementById('task-form');
+const taskNameNode = document.getElementById('task-name');
+const taskPriorityNode = document.getElementById('task-priority');
+const taskNotesNode = document.getElementById('task-notes');
+const taskAllocationListNode = document.getElementById('task-allocation-list');
+const taskStorageKey = 'focusflow-task-allocations';
+const initialTaskAllocations = [
+  {
+    name: 'Resolve launch blocker',
+    priority: 'critical',
+    notes: 'Escalated tasks are routed into the nearest uninterrupted focus window.'
+  },
+  {
+    name: 'Review roadmap dependencies',
+    priority: 'high',
+    notes: 'High-priority items are scheduled into the next meaningful working session.'
+  }
+];
+const aiResponses = [
+  'I can summarize your priorities, break down a complex task, or help you plan your next focus sprint.',
+  'Try asking for a time-blocked plan, a concise summary, or a list of immediate next actions.',
+  'I recommend defining your top objective first, then I can turn it into a fast execution checklist.'
+];
+
 
 const terminalPhrases = [
   'Initializing neural focus matrix',
@@ -172,6 +202,198 @@ function setupParallax() {
   window.addEventListener('resize', updateParallax);
 }
 
+function appendChatMessage(role, message) {
+  if (!chatMessagesNode) return;
+
+  const bubble = document.createElement('div');
+  bubble.className = `chat-bubble ${role === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}`;
+
+  const roleLabel = document.createElement('span');
+  roleLabel.className = 'chat-role';
+  roleLabel.textContent = role === 'user' ? 'Operator' : 'FocusFlow AI';
+
+  const textNode = document.createElement('p');
+  textNode.textContent = message;
+
+  bubble.append(roleLabel, textNode);
+  chatMessagesNode.appendChild(bubble);
+  chatMessagesNode.scrollTop = chatMessagesNode.scrollHeight;
+}
+
+function setChatReadyState(isReady) {
+  if (chatInputNode) chatInputNode.disabled = !isReady;
+  if (chatSendButton) chatSendButton.disabled = !isReady;
+  if (chatStatusNode) chatStatusNode.textContent = isReady ? 'Secure Session' : 'Standby Mode';
+}
+
+function sendMessage() {
+  if (!chatInputNode) return;
+
+  const message = chatInputNode.value.trim();
+  if (!message) return;
+
+  appendChatMessage('user', message);
+  chatInputNode.value = '';
+
+  const response = aiResponses[Math.floor(Math.random() * aiResponses.length)];
+  window.setTimeout(() => {
+    appendChatMessage('ai', response);
+  }, 240);
+}
+
+function loadAI() {
+  if (!workspaceNode || !chatMessagesNode) return;
+
+  chatMessagesNode.innerHTML = '';
+  setChatReadyState(true);
+  appendChatMessage('ai', 'Console initialized. Ask for a plan, summary, or next action.');
+
+  if (chatLoadButton) {
+    chatLoadButton.textContent = 'AI Interface Ready';
+    chatLoadButton.disabled = true;
+  }
+
+  if (chatInputNode) {
+    chatInputNode.focus();
+  }
+}
+
+function setupChatUi() {
+  if (chatLoadButton) {
+    chatLoadButton.addEventListener('click', loadAI);
+  }
+
+  if (chatSendButton) {
+    chatSendButton.addEventListener('click', sendMessage);
+  }
+
+  if (chatInputNode) {
+    chatInputNode.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' && !chatInputNode.disabled) {
+        event.preventDefault();
+        sendMessage();
+      }
+    });
+  }
+}
+
+const priorityTimingMap = {
+  critical: {
+    label: 'Critical',
+    slot: 'Immediate slot',
+    duration: '45 min focus block',
+    start: 'Start now',
+    note: 'Critical work is pulled into the closest protected execution window.',
+    className: 'allocation-card-critical'
+  },
+  high: {
+    label: 'High',
+    slot: 'Today',
+    duration: '60 min strategy block',
+    start: 'Next available session',
+    note: 'High-priority work is placed into the next open deep-work block today.',
+    className: 'allocation-card-high'
+  },
+  medium: {
+    label: 'Medium',
+    slot: 'Within 24 hours',
+    duration: '45 min execution block',
+    start: 'Tomorrow morning queue',
+    note: 'Medium items are grouped into the next planning cycle without displacing urgent work.',
+    className: 'allocation-card-medium'
+  },
+  low: {
+    label: 'Low',
+    slot: 'Backlog lane',
+    duration: '30 min admin block',
+    start: 'Next low-intensity window',
+    note: 'Low-priority tasks are deferred into lighter support windows.',
+    className: 'allocation-card-low'
+  }
+};
+
+function createTaskAllocationCard(task) {
+  const config = priorityTimingMap[task.priority] || priorityTimingMap.medium;
+  const card = document.createElement('article');
+  card.className = `allocation-card ${config.className}`;
+
+  const contentWrap = document.createElement('div');
+  const priorityNode = document.createElement('p');
+  priorityNode.className = 'allocation-priority';
+  priorityNode.textContent = config.label;
+
+  const titleNode = document.createElement('h4');
+  titleNode.className = 'allocation-title';
+  titleNode.textContent = task.name;
+
+  const metaNode = document.createElement('p');
+  metaNode.className = 'allocation-meta';
+  metaNode.textContent = `${config.slot} • ${config.duration} • ${config.start}`;
+
+  contentWrap.append(priorityNode, titleNode, metaNode);
+
+  const notesNodeLocal = document.createElement('p');
+  notesNodeLocal.className = 'allocation-notes';
+  notesNodeLocal.textContent = task.notes || config.note;
+
+  card.append(contentWrap, notesNodeLocal);
+  return card;
+}
+
+function readSavedTaskAllocations() {
+  try {
+    const raw = localStorage.getItem(taskStorageKey);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeTaskAllocations(tasks) {
+  localStorage.setItem(taskStorageKey, JSON.stringify(tasks));
+}
+
+function renderTaskAllocations(tasks) {
+  if (!taskAllocationListNode) return;
+
+  taskAllocationListNode.innerHTML = '';
+  tasks.forEach((task) => {
+    taskAllocationListNode.appendChild(createTaskAllocationCard(task));
+  });
+}
+
+function setupTaskAllocationSystem() {
+  if (!taskFormNode || !taskNameNode || !taskPriorityNode || !taskAllocationListNode) return;
+
+  let taskAllocations = [...readSavedTaskAllocations()];
+
+  if (!taskAllocations.length) {
+    taskAllocations = [...initialTaskAllocations];
+    writeTaskAllocations(taskAllocations);
+  }
+
+  renderTaskAllocations(taskAllocations);
+
+  taskFormNode.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const taskName = taskNameNode.value.trim();
+    const priority = taskPriorityNode.value;
+    const notes = taskNotesNode?.value.trim() || '';
+
+    if (!taskName) return;
+
+    taskAllocations = [{ name: taskName, priority, notes }, ...taskAllocations].slice(0, 6);
+    writeTaskAllocations(taskAllocations);
+    renderTaskAllocations(taskAllocations);
+
+    taskFormNode.reset();
+    taskPriorityNode.value = 'medium';
+    taskNameNode.focus();
+  });
+}
+
 function normalizeBaseUrl(value) {
   return value.replace(/\/$/, '');
 }
@@ -278,4 +500,6 @@ streamLogs();
 setupRevealObserver();
 setupNavSpy();
 setupParallax();
+setupChatUi();
+setupTaskAllocationSystem();
 setupAiToolkit();
