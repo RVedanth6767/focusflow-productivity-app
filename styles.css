@@ -612,3 +612,38 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+
+.hero-launch-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1.75rem;
+}
+
+.hero-launch-card {
+  border-radius: 1.4rem;
+  border: 1px solid rgba(0,212,255,.16);
+  background: linear-gradient(180deg, rgba(8,16,31,.72), rgba(2,6,23,.86));
+  padding: 1.1rem 1.2rem;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.04), 0 16px 32px rgba(2,6,23,.26);
+}
+
+.hero-launch-title {
+  margin-top: 0.8rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-launch-copy {
+  margin-top: 0.8rem;
+  color: rgba(226,232,240,.8);
+  line-height: 1.75;
+}
+
+@media (min-width: 768px) {
+  .hero-launch-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

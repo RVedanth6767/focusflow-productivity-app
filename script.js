@@ -20,6 +20,8 @@ const chatInputNode = document.getElementById('chat-input');
 const chatSendButton = document.getElementById('chat-send-button');
 const chatLoadButton = document.getElementById('load-ai-button');
 const chatStatusNode = document.getElementById('chat-status');
+const heroOpenAiButton = document.getElementById('hero-open-ai');
+const heroOpenTasksButton = document.getElementById('hero-open-tasks');
 const taskFormNode = document.getElementById('task-form');
 const taskNameNode = document.getElementById('task-name');
 const taskPriorityNode = document.getElementById('task-priority');
@@ -202,6 +204,13 @@ function setupParallax() {
   window.addEventListener('resize', updateParallax);
 }
 
+function scrollToSection(sectionId) {
+  const section = document.getElementById(sectionId);
+  if (!section) return;
+
+  section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function appendChatMessage(role, message) {
   if (!chatMessagesNode) return;
 
@@ -244,6 +253,7 @@ function sendMessage() {
 function loadAI() {
   if (!workspaceNode || !chatMessagesNode) return;
 
+  scrollToSection('modules');
   chatMessagesNode.innerHTML = '';
   setChatReadyState(true);
   appendChatMessage('ai', 'Console initialized. Ask for a plan, summary, or next action.');
@@ -253,6 +263,11 @@ function loadAI() {
     chatLoadButton.disabled = true;
   }
 
+  window.setTimeout(() => {
+    if (chatInputNode) {
+      chatInputNode.focus();
+    }
+  }, 350);
   if (chatInputNode) {
     chatInputNode.focus();
   }
@@ -261,6 +276,16 @@ function loadAI() {
 function setupChatUi() {
   if (chatLoadButton) {
     chatLoadButton.addEventListener('click', loadAI);
+  }
+
+  if (heroOpenAiButton) {
+    heroOpenAiButton.addEventListener('click', loadAI);
+  }
+
+  if (heroOpenTasksButton) {
+    heroOpenTasksButton.addEventListener('click', () => {
+      scrollToSection('task-system');
+    });
   }
 
   if (chatSendButton) {
