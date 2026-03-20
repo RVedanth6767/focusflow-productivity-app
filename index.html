@@ -75,9 +75,10 @@
               <ul class="flex flex-wrap gap-x-5 gap-y-2 text-xs uppercase tracking-[0.3em] text-slate-200/70">
                 <li><a class="nav-link is-active" href="#hero">I. Dashboard</a></li>
                 <li><a class="nav-link" href="#modules">II. AI Assistant</a></li>
-                <li><a class="nav-link" href="#history">III. History</a></li>
-                <li><a class="nav-link" href="#analytics">IV. Analytics</a></li>
-                <li><a class="nav-link" href="#settings">V. Settings</a></li>
+                <li><a class="nav-link" href="#task-system">III. Task System</a></li>
+                <li><a class="nav-link" href="#history">IV. History</a></li>
+                <li><a class="nav-link" href="#analytics">V. Analytics</a></li>
+                <li><a class="nav-link" href="#settings">VI. Settings</a></li>
               </ul>
             </nav>
           </div>
@@ -132,8 +133,21 @@
             </div>
 
             <div class="flex flex-wrap gap-4">
-              <a href="#modules" class="action-btn action-btn-primary">Access Interface</a>
-              <a href="#analytics" class="action-btn action-btn-secondary">View Analytics</a>
+              <button id="hero-open-ai" class="action-btn action-btn-primary" type="button">Open AI Workspace</button>
+              <button id="hero-open-tasks" class="action-btn action-btn-secondary" type="button">Open Task System</button>
+            </div>
+
+            <div class="hero-launch-grid">
+              <article class="hero-launch-card">
+                <p class="mini-stat-label">AI Workspace</p>
+                <h3 class="hero-launch-title">Live Assistant Console</h3>
+                <p class="hero-launch-copy">Launch the chat workspace instantly from the hero section and jump directly into the assistant console.</p>
+              </article>
+              <article class="hero-launch-card">
+                <p class="mini-stat-label">Task System</p>
+                <h3 class="hero-launch-title">Priority Allocation Grid</h3>
+                <p class="hero-launch-copy">Jump straight to the task manager and timing allocation system without hunting below the fold.</p>
+              </article>
             </div>
           </div>
 
@@ -204,26 +218,113 @@
             </p>
           </div>
 
-          <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            <article class="system-card">
-              <p class="card-index">01</p>
-              <h3 class="card-title">AI Assistant</h3>
-              <p class="card-body">Context-aware command layer delivering instant summaries, actions, and strategic next steps.</p>
+          <div class="grid gap-6 xl:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)]">
+            <section id="workspace" class="info-panel workspace-shell reveal is-visible" aria-labelledby="workspace-title">
+              <div class="chat-ui">
+                <div class="chat-header">
+                  <div>
+                    <p class="panel-kicker">AI Workspace</p>
+                    <h3 id="workspace-title" class="chat-title">Assistant Console</h3>
+                  </div>
+                  <span id="chat-status" class="chat-status">Standby Mode</span>
+                </div>
+
+                <div class="chat-intro">
+                  <p class="panel-body">Open a focused chat surface for quick summaries, planning help, and next-step recommendations without leaving the dashboard.</p>
+                  <button id="load-ai-button" class="action-btn action-btn-primary" type="button">Initialize AI Interface</button>
+                </div>
+
+                <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+
+                <div class="chat-input-box">
+                  <label class="sr-only" for="chat-input">Ask your AI assistant</label>
+                  <input id="chat-input" type="text" placeholder="Ask your AI assistant..." disabled />
+                  <button id="chat-send-button" type="button" disabled>Send</button>
+                </div>
+              </div>
+            </section>
+
+            <div class="grid gap-6 sm:grid-cols-2">
+              <article class="system-card">
+                <p class="card-index">01</p>
+                <h3 class="card-title">AI Assistant</h3>
+                <p class="card-body">Context-aware command layer delivering instant summaries, actions, and strategic next steps.</p>
+              </article>
+              <article class="system-card">
+                <p class="card-index">02</p>
+                <h3 class="card-title">Task Engine</h3>
+                <p class="card-body">Autonomous queue management with intelligent prioritization and friction-free execution flows.</p>
+              </article>
+              <article class="system-card">
+                <p class="card-index">03</p>
+                <h3 class="card-title">Focus Timer</h3>
+                <p class="card-body">Deep-work sequencing built with interval automation, signal locking, and cadence control.</p>
+              </article>
+              <article class="system-card">
+                <p class="card-index">04</p>
+                <h3 class="card-title">Analytics</h3>
+                <p class="card-body">High-resolution insight panels tracking output velocity, energy curves, and performance anomalies.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+        <section id="task-system" class="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
+          <div class="grid gap-6 xl:grid-cols-[minmax(320px,0.92fr)_minmax(0,1.08fr)]">
+            <article class="info-panel task-panel">
+              <p class="panel-kicker">Task Manager System</p>
+              <h3 class="panel-title">Priority Command Intake</h3>
+              <p class="panel-body">Capture a task, assign its urgency, and let the system generate a recommended allocation window automatically.</p>
+
+              <form id="task-form" class="task-form mt-8">
+                <label class="task-field">
+                  <span class="tool-label">Task Name</span>
+                  <input id="task-name" class="tool-input" type="text" placeholder="Prepare sprint brief" required />
+                </label>
+                <label class="task-field">
+                  <span class="tool-label">Priority</span>
+                  <select id="task-priority" class="tool-input">
+                    <option value="critical">Critical</option>
+                    <option value="high">High</option>
+                    <option value="medium" selected>Medium</option>
+                    <option value="low">Low</option>
+                  </select>
+                </label>
+                <label class="task-field task-field-full">
+                  <span class="tool-label">Task Notes</span>
+                  <textarea id="task-notes" class="tool-input task-textarea" rows="4" placeholder="Outline deliverables, blockers, or dependencies."></textarea>
+                </label>
+                <div class="task-field task-field-full task-form-actions">
+                  <button class="action-btn action-btn-primary" type="submit">Allocate Task</button>
+                </div>
+              </form>
             </article>
-            <article class="system-card">
-              <p class="card-index">02</p>
-              <h3 class="card-title">Task Engine</h3>
-              <p class="card-body">Autonomous queue management with intelligent prioritization and friction-free execution flows.</p>
-            </article>
-            <article class="system-card">
-              <p class="card-index">03</p>
-              <h3 class="card-title">Focus Timer</h3>
-              <p class="card-body">Deep-work sequencing built with interval automation, signal locking, and cadence control.</p>
-            </article>
-            <article class="system-card">
-              <p class="card-index">04</p>
-              <h3 class="card-title">Analytics</h3>
-              <p class="card-body">High-resolution insight panels tracking output velocity, energy curves, and performance anomalies.</p>
+
+            <article class="info-panel task-panel">
+              <div class="flex flex-col gap-4 border-b border-white/10 pb-6 md:flex-row md:items-end md:justify-between">
+                <div>
+                  <p class="panel-kicker">Separate Task Allocation System</p>
+                  <h3 class="panel-title">Priority-Based Timing Grid</h3>
+                </div>
+                <p class="task-allocation-caption">Time windows auto-fill by priority so high-impact work is scheduled before lower urgency tasks.</p>
+              </div>
+
+              <div class="allocation-summary mt-6 grid gap-4 sm:grid-cols-3">
+                <div class="mini-stat">
+                  <p class="mini-stat-label">Critical Window</p>
+                  <p class="mini-stat-value">Now + 30m</p>
+                </div>
+                <div class="mini-stat">
+                  <p class="mini-stat-label">High Window</p>
+                  <p class="mini-stat-value">Today PM</p>
+                </div>
+                <div class="mini-stat">
+                  <p class="mini-stat-label">Medium / Low</p>
+                  <p class="mini-stat-value">Queued</p>
+                </div>
+              </div>
+
+              <div id="task-allocation-list" class="task-allocation-list mt-8" aria-live="polite"></div>
             </article>
           </div>
         </section>
