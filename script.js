@@ -22,6 +22,8 @@ const elements = {
   workspaceAssignee: document.getElementById('workspace-assignee'),
   workspaceTaskStatus: document.getElementById('workspace-task-status'),
   workspaceSessionChip: document.getElementById('workspace-session-chip'),
+  workspaceCurrentActivity: document.getElementById('workspace-current-activity'),
+  workspaceActiveTab: document.getElementById('workspace-active-tab'),
   startTimerButton: document.getElementById('start-timer-button'),
   pauseTimerButton: document.getElementById('pause-timer-button'),
   resetTimerButton: document.getElementById('reset-timer-button'),
@@ -53,13 +55,16 @@ const elements = {
   aiStatusLabel: document.getElementById('ai-status-label'),
   aiModelLabel: document.getElementById('ai-model-label'),
   aiKeyPreview: document.getElementById('ai-key-preview'),
-  assistantFooterProvider: document.getElementById('assistant-footer-provider')
+  assistantFooterProvider: document.getElementById('assistant-footer-provider'),
+  productivityInsightSwitch: document.getElementById('productivity-insight-switch'),
+  productivityInsightTopTask: document.getElementById('productivity-insight-top-task')
 };
 
 const state = {
   tasks: [],
   activeTaskId: null,
   timerId: null,
+  activityTimerId: null,
   switchCount: 0,
   api: {
     baseUrl: DEFAULT_BASE_URL,
@@ -116,8 +121,26 @@ const suggestionTemplates = [
   'How should I structure the API endpoints?'
 ];
 
+const mockActivities = [
+  { activity: 'Writing API routes', tab: 'VS Code - routes.ts' },
+  { activity: 'Fixing bug in auth middleware', tab: 'VS Code - auth.js' },
+  { activity: 'Reviewing pull request', tab: 'GitHub - PR review' },
+  { activity: 'Running unit tests', tab: 'Terminal - npm test' },
+  { activity: 'Optimizing DB query', tab: 'VS Code - database.ts' },
+  { activity: 'Reading documentation', tab: 'Browser - Docs' },
+  { activity: 'Debugging API', tab: 'Postman - Auth collection' }
+];
+
 function normalizeBaseUrl(value) {
   return (value || DEFAULT_BASE_URL).trim().replace(/\/$/, '');
+}
+
+function getRandomActivityDelay() {
+  return (10 + Math.floor(Math.random() * 11)) * 1000;
+}
+
+function getRandomActivitySnapshot() {
+  return mockActivities[Math.floor(Math.random() * mockActivities.length)];
 }
 
 function getActiveTask() {
@@ -165,6 +188,33 @@ function createComment(author, text, timestamp = new Date().toISOString()) {
 }
 
 function normalizeTask(task) {
+  const now = Date.now();
+  const legacyTimeSpent = Math.max(0, Number(task.timeSpent) || 0);
+  const hasSessions = Array.isArray(task.sessions) && task.sessions.length > 0;
+  const sessions = hasSessions
+    ? task.sessions
+        .map((session) => ({
+          startTime: Number(session.startTime) || now,
+          endTime: Number.isFinite(session.endTime) ? Number(session.endTime) : null,
+          status: ['active', 'idle', 'paused'].includes(session.status) ? session.status : 'paused',
+          activity: session.activity || task.activity || 'Reviewing task scope',
+          tab: session.tab || task.tab || 'FlowMind Dashboard',
+          lastActivityAt: Number(session.lastActivityAt) || Number(session.startTime) || now,
+          nextActivityChangeAt: Number(session.nextActivityChangeAt) || 0
+        }))
+        .sort((a, b) => a.startTime - b.startTime)
+    : [
+        {
+          startTime: now - (legacyTimeSpent * 1000),
+          endTime: task.isRunning ? null : now,
+          status: task.isRunning ? 'active' : 'paused',
+          activity: task.activity || 'Reviewing task scope',
+          tab: task.tab || 'FlowMind Dashboard',
+          lastActivityAt: now,
+          nextActivityChangeAt: 0
+        }
+      ];
+
   return {
     id: task.id || createId(),
     title: task.title || 'Untitled task',
@@ -172,8 +222,8 @@ function normalizeTask(task) {
     priority: priorityMap[task.priority] || 'Medium',
     status: frontendStatusMap[task.status] || 'Paused',
     assignee: task.assignee || 'Rajesh',
-    timeSpent: Number(task.timeSpent) || 0,
-    isRunning: Boolean(task.isRunning),
+    sessions,
+    totalTime: Number(task.totalTime) || 0,
     lastUpdated: task.lastUpdated || new Date().toISOString(),
     source: task.source || 'local',
     comments: Array.isArray(task.comments) ? task.comments : [],
@@ -183,6 +233,7 @@ function normalizeTask(task) {
 
 function defaultTasks() {
   const now = new Date().toISOString();
+  const nowMs = Date.now();
   return [
     normalizeTask({
       id: createId(),
@@ -191,8 +242,17 @@ function defaultTasks() {
       priority: 'High',
       status: 'Active',
       assignee: 'Rajesh',
-      timeSpent: 5724,
-      isRunning: true,
+      sessions: [
+        {
+          startTime: nowMs - 5724 * 1000,
+          endTime: null,
+          status: 'active',
+          activity: 'Writing API routes',
+          tab: 'VS Code - auth.routes.ts',
+          lastActivityAt: nowMs,
+          nextActivityChangeAt: 0
+        }
+      ],
       lastUpdated: now,
       comments: [
         createComment('Rajesh', 'Setting up the database schema and routes.', now),
@@ -207,7 +267,17 @@ function defaultTasks() {
       priority: 'Medium',
       status: 'In Progress',
       assignee: 'Sarah',
-      timeSpent: 2700,
+      sessions: [
+        {
+          startTime: nowMs - 2700 * 1000,
+          endTime: nowMs,
+          status: 'paused',
+          activity: 'Debugging layout overflow',
+          tab: 'Chrome - Dashboard',
+          lastActivityAt: nowMs,
+          nextActivityChangeAt: 0
+        }
+      ],
       lastUpdated: now,
       comments: [createComment('Sarah', 'I narrowed the issue down to the task rail width.', now)]
     }),
@@ -218,7 +288,17 @@ function defaultTasks() {
       priority: 'Low',
       status: 'Paused',
       assignee: 'Rooe',
-      timeSpent: 4200,
+      sessions: [
+        {
+          startTime: nowMs - 4200 * 1000,
+          endTime: nowMs,
+          status: 'paused',
+          activity: 'Reading documentation',
+          tab: 'Notion - Docs',
+          lastActivityAt: nowMs,
+          nextActivityChangeAt: 0
+        }
+      ],
       lastUpdated: now
     })
   ];
@@ -256,8 +336,38 @@ function loadState() {
     state.activeTaskId = state.tasks[0]?.id || null;
   }
 
-  const runningTask = state.tasks.find((task) => task.isRunning);
-  state.tasks = state.tasks.map((task) => ({ ...task, isRunning: runningTask ? task.id === runningTask.id : false }));
+}
+
+function getCurrentSession(task) {
+  return task.sessions.find((session) => session.endTime === null) || null;
+}
+
+function getTaskStatus(task) {
+  const currentSession = getCurrentSession(task);
+  if (currentSession) return currentSession.status;
+  const lastSession = task.sessions[task.sessions.length - 1];
+  return lastSession?.status || 'paused';
+}
+
+function getTaskTotalTime(task, now = Date.now()) {
+  return task.sessions.reduce((sum, session) => {
+    const end = session.endTime === null ? now : session.endTime;
+    return sum + Math.max(0, Math.floor((end - session.startTime) / 1000));
+  }, 0);
+}
+
+function getTaskActivity(task) {
+  const currentSession = getCurrentSession(task);
+  if (currentSession) return currentSession.activity;
+  const lastSession = task.sessions[task.sessions.length - 1];
+  return lastSession?.activity || 'Waiting for next action';
+}
+
+function getTaskTab(task) {
+  const currentSession = getCurrentSession(task);
+  if (currentSession) return currentSession.tab;
+  const lastSession = task.sessions[task.sessions.length - 1];
+  return lastSession?.tab || 'FlowMind Dashboard';
 }
 
 function syncInputsFromState() {
@@ -350,8 +460,8 @@ function mergeTask(remoteTask) {
     ...existing,
     ...remoteTask,
     source: 'backend',
-    isRunning: existing?.isRunning || false,
-    timeSpent: existing?.timeSpent || remoteTask.timeSpent || 0,
+    sessions: existing?.sessions,
+    totalTime: existing?.totalTime || remoteTask.totalTime || 0,
     assignee: existing?.assignee || 'Rajesh',
     comments: existing?.comments || [],
     chatHistory: existing?.chatHistory || []
@@ -395,16 +505,13 @@ async function syncTasksFromBackend() {
 function updateTask(taskId, updater) {
   state.tasks = state.tasks.map((task) => {
     if (task.id !== taskId) return task;
-    return normalizeTask({ ...task, ...updater(task), lastUpdated: new Date().toISOString() });
+    const nextTask = normalizeTask({ ...task, ...updater(task), lastUpdated: new Date().toISOString() });
+    return {
+      ...nextTask,
+      totalTime: getTaskTotalTime(nextTask)
+    };
   });
   saveState();
-}
-
-function pauseOtherTasks(exceptTaskId = null) {
-  state.tasks = state.tasks.map((task) => {
-    if (task.id === exceptTaskId) return task;
-    return normalizeTask({ ...task, isRunning: false, status: task.status === 'Completed' ? 'Completed' : 'Paused' });
-  });
 }
 
 function renderTaskTabs() {
@@ -432,38 +539,69 @@ function renderTaskTabs() {
 
     titleWrap.append(title, meta);
 
+    const taskStatus = getTaskStatus(task);
+    const isActive = taskStatus === 'active';
+    const isIdle = taskStatus === 'idle';
+    const totalTime = getTaskTotalTime(task);
+
+    button.classList.toggle('is-running', isActive);
+    button.classList.toggle('is-idle', isIdle);
+    button.classList.toggle('is-paused', taskStatus === 'paused');
+
     const time = document.createElement('span');
     time.className = 'task-mini-time';
-    time.textContent = formatDurationCompact(task.timeSpent);
+    time.textContent = formatDurationCompact(totalTime);
 
     head.append(titleWrap, time);
+
+    const activity = document.createElement('p');
+    activity.className = 'task-activity';
+    activity.textContent = getTaskActivity(task);
 
     const foot = document.createElement('div');
     foot.className = 'task-tab-foot';
 
     const status = document.createElement('span');
-    status.className = `task-status-badge ${task.isRunning ? 'active' : ''}`;
+    status.className = `task-status-badge ${isActive ? 'active' : ''}`;
     const dot = document.createElement('span');
-    dot.className = `status-dot ${task.isRunning ? 'success' : task.status === 'Paused' ? 'warning' : ''}`.trim();
+    dot.className = `status-dot ${isActive ? 'success pulsing' : isIdle ? 'warning' : ''}`.trim();
     const text = document.createElement('span');
-    text.textContent = task.isRunning ? 'Active' : task.status;
+    text.textContent = isActive ? 'Active' : isIdle ? 'Idle' : 'Paused';
     status.append(dot, text);
+
+    if (isIdle) {
+      const idleLabel = document.createElement('span');
+      idleLabel.className = 'task-idle-label';
+      idleLabel.textContent = 'Idle';
+      foot.appendChild(idleLabel);
+    }
 
     const updated = document.createElement('span');
     updated.className = 'task-meta';
     updated.textContent = formatTimestamp(task.lastUpdated);
 
     foot.append(status, updated);
-    button.append(head, foot);
+    button.append(head, activity, foot);
     elements.taskTabs.appendChild(button);
   });
 }
 
 function renderHeaderMetrics() {
-  const totalTime = state.tasks.reduce((sum, task) => sum + task.timeSpent, 0);
+  const totalTime = state.tasks.reduce((sum, task) => sum + getTaskTotalTime(task), 0);
   if (elements.focusedTotal) elements.focusedTotal.textContent = formatDurationCompact(totalTime);
   if (elements.switchCount) {
     elements.switchCount.textContent = `${state.switchCount} Switch${state.switchCount === 1 ? '' : 'es'}`;
+  }
+  const topTask = state.tasks
+    .map((task) => ({ title: task.title, total: getTaskTotalTime(task) }))
+    .sort((a, b) => b.total - a.total)[0];
+  if (elements.productivityInsightSwitch) {
+    elements.productivityInsightSwitch.textContent = `You switched tasks ${state.switchCount} times in the last hour`;
+  }
+  if (elements.productivityInsightTopTask) {
+    elements.productivityInsightTopTask.textContent = topTask
+      ? `Most time spent on: ${topTask.title}`
+      : 'Most time spent on: —';
   }
 }
 
@@ -515,14 +653,18 @@ function renderWorkspace() {
   elements.workspaceContent?.classList.remove('hidden');
   elements.workspaceTaskTitle.textContent = activeTask.title;
   elements.workspaceTaskDescription.textContent = activeTask.description;
-  elements.workspaceMiniTime.textContent = formatDuration(activeTask.timeSpent);
-  elements.workspaceTimer.textContent = formatDuration(activeTask.timeSpent);
+  const totalTime = getTaskTotalTime(activeTask);
+  const currentStatus = getTaskStatus(activeTask);
+  elements.workspaceMiniTime.textContent = formatDuration(totalTime);
+  elements.workspaceTimer.textContent = formatDuration(totalTime);
   elements.workspacePriority.textContent = activeTask.priority;
   elements.workspaceUpdated.textContent = formatTimestamp(activeTask.lastUpdated);
   elements.workspaceAssignee.textContent = activeTask.assignee;
-  elements.workspaceTaskStatus.textContent = activeTask.isRunning ? 'In Progress' : activeTask.status;
-  elements.workspaceSessionChip.textContent = activeTask.isRunning ? 'Active session' : activeTask.status;
-  elements.workspaceSessionChip.classList.toggle('running', activeTask.isRunning);
+  elements.workspaceTaskStatus.textContent = currentStatus === 'active' ? 'In Progress' : currentStatus[0].toUpperCase() + currentStatus.slice(1);
+  elements.workspaceSessionChip.textContent = currentStatus === 'active' ? 'Active session' : currentStatus === 'idle' ? 'Idle session' : 'Paused';
+  elements.workspaceSessionChip.classList.toggle('running', currentStatus === 'active');
+  if (elements.workspaceCurrentActivity) elements.workspaceCurrentActivity.textContent = getTaskActivity(activeTask);
+  if (elements.workspaceActiveTab) elements.workspaceActiveTab.textContent = getTaskTab(activeTask);
   renderComments(activeTask);
 }
 
@@ -644,50 +786,131 @@ function renderAll() {
 function startTimer() {
   const activeTask = getActiveTask();
   if (!activeTask) return;
-  pauseOtherTasks(activeTask.id);
-  updateTask(activeTask.id, () => ({ isRunning: true, status: 'In Progress' }));
+  updateTask(activeTask.id, (task) => {
+    const now = Date.now();
+    const currentSession = getCurrentSession(task);
+    if (currentSession) {
+      return {
+        sessions: task.sessions.map((session) => (
+          session.endTime === null
+            ? {
+                ...session,
+                status: 'active',
+                lastActivityAt: now,
+                nextActivityChangeAt: now + getRandomActivityDelay()
+              }
+            : session
+        ))
+      };
+    }
+    return {
+      sessions: [
+        ...task.sessions,
+        {
+          startTime: now,
+          endTime: null,
+          status: 'active',
+          activity: getTaskActivity(task),
+          tab: getTaskTab(task),
+          lastActivityAt: now,
+          nextActivityChangeAt: now + getRandomActivityDelay()
+        }
+      ]
+    };
+  });
   renderAll();
 }
 
 function pauseTimer() {
   const activeTask = getActiveTask();
   if (!activeTask) return;
-  updateTask(activeTask.id, () => ({ isRunning: false, status: 'Paused' }));
+  updateTask(activeTask.id, (task) => ({
+    sessions: task.sessions.map((session) => (
+      session.endTime === null
+        ? { ...session, status: 'paused', endTime: Date.now() }
+        : session
+    ))
+  }));
   renderAll();
 }
 
 function resetTimer() {
   const activeTask = getActiveTask();
   if (!activeTask) return;
-  updateTask(activeTask.id, () => ({ isRunning: false, status: 'Paused', timeSpent: 0 }));
+  updateTask(activeTask.id, () => ({
+    sessions: []
+  }));
   renderAll();
 }
 
 function tickTimer() {
   if (state.timerId) clearInterval(state.timerId);
   state.timerId = window.setInterval(() => {
-    const activeTask = getActiveTask();
-    if (!activeTask?.isRunning) return;
-    updateTask(activeTask.id, (task) => ({ timeSpent: task.timeSpent + 1, status: 'In Progress' }));
     renderTaskTabs();
     renderHeaderMetrics();
     renderWorkspace();
   }, 1000);
 }
 
+function runActivitySimulation() {
+  if (state.activityTimerId) clearInterval(state.activityTimerId);
+  state.activityTimerId = window.setInterval(() => {
+    const now = Date.now();
+    let changed = false;
+
+    state.tasks = state.tasks.map((task) => {
+      let taskChanged = false;
+      const sessions = task.sessions.map((session) => {
+        if (session.endTime !== null || session.status === 'paused') return session;
+        let nextSession = session;
+
+        if (session.nextActivityChangeAt === 0 || now >= session.nextActivityChangeAt) {
+          const nextActivity = getRandomActivitySnapshot();
+          nextSession = {
+            ...nextSession,
+            status: 'active',
+            activity: nextActivity.activity,
+            tab: nextActivity.tab,
+            lastActivityAt: now,
+            nextActivityChangeAt: now + getRandomActivityDelay()
+          };
+          taskChanged = true;
+        } else if (now - session.lastActivityAt >= 15000 && session.status !== 'idle') {
+          nextSession = {
+            ...nextSession,
+            status: 'idle'
+          };
+          taskChanged = true;
+        }
+
+        return nextSession;
+      });
+
+      if (taskChanged) {
+        changed = true;
+        const normalized = normalizeTask({ ...task, sessions, lastUpdated: new Date().toISOString() });
+        return { ...normalized, totalTime: getTaskTotalTime(normalized, now) };
+      }
+      return task;
+    });
+
+    if (changed) {
+      saveState();
+      renderTaskTabs();
+      renderHeaderMetrics();
+      renderWorkspace();
+    }
+  }, 1000);
+}
+
 function setActiveTask(taskId) {
   if (state.activeTaskId && state.activeTaskId !== taskId) {
     state.switchCount += 1;
+    saveState();
   }
 
-  const previousTask = getActiveTask();
-  const wasRunning = Boolean(previousTask?.isRunning);
-  pauseOtherTasks(taskId);
   state.activeTaskId = taskId;
-  updateTask(taskId, (task) => ({
-    isRunning: wasRunning,
-    status: wasRunning ? 'In Progress' : task.status
-  }));
+  saveState();
   renderAll();
   void loadChatHistoryForTask(getActiveTask());
 }
@@ -743,8 +966,7 @@ function handleTaskCreate(event) {
     priority: elements.taskPriorityInput.value,
     status: 'Active',
     assignee: elements.taskAssigneeInput.value.trim() || 'Rajesh',
-    timeSpent: 0,
-    isRunning: false,
+    sessions: [],
     lastUpdated: new Date().toISOString(),
     comments: [createComment(elements.taskAssigneeInput.value.trim() || 'Rajesh', 'Task session created and ready for execution.')],
     chatHistory: []
@@ -752,7 +974,6 @@ function handleTaskCreate(event) {
 
   if (!task.title || !task.description) return;
 
-  pauseOtherTasks();
   state.tasks.unshift(task);
   state.activeTaskId = task.id;
   elements.taskForm.reset();
@@ -949,6 +1170,7 @@ loadState();
 syncInputsFromState();
 bindEvents();
 tickTimer();
+runActivitySimulation();
 renderAll();
 if (state.api.email) {
   setAuthStatus(`Ready to use backend account ${state.api.email}.`);

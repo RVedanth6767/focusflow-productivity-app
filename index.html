@@ -127,6 +127,10 @@
 
                 <div class="timer-block">
                   <div id="workspace-timer" class="timer-display">00:00:00</div>
+                  <div class="workspace-activity">
+                    <p>Current Activity: <strong id="workspace-current-activity">Waiting for next action</strong></p>
+                    <p>Active Window: <strong id="workspace-active-tab">FlowMind Dashboard</strong></p>
+                  </div>
                   <div class="timer-actions">
                     <button id="start-timer-button" class="primary-button" type="button">Start</button>
                     <button id="pause-timer-button" class="secondary-button" type="button">Pause</button>
@@ -234,6 +238,10 @@
                   </div>
                 </form>
                 <p id="auth-status-message" class="tool-meta">Use your FlowMind backend account to sync tasks and enable task-linked AI chat.</p>
+                <div class="insight-block">
+                  <p id="productivity-insight-switch" class="tool-meta">You switched tasks 0 times in the last hour</p>
+                  <p id="productivity-insight-top-task" class="tool-meta">Most time spent on: —</p>
+                </div>
               </section>
 
               <div id="chat-empty" class="chat-empty glass-inset">

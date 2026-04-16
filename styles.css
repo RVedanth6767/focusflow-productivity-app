@@ -443,6 +443,19 @@ textarea {
   color: inherit;
 }
 
+.task-tab.is-running {
+  border-color: rgba(74, 222, 128, 0.36);
+  box-shadow: 0 0 0 1px rgba(74, 222, 128, 0.2), 0 12px 30px rgba(74, 222, 128, 0.12);
+}
+
+.task-tab.is-idle {
+  opacity: 0.86;
+}
+
+.task-tab.is-paused {
+  opacity: 0.72;
+}
+
 .task-tab.is-active {
   border-color: var(--panel-border-strong);
   background: linear-gradient(135deg, rgba(47,125,255,.24), rgba(0,212,255,.12));
@@ -466,6 +479,12 @@ textarea {
   font-weight: 600;
 }
 
+.task-activity {
+  margin: 8px 0 0;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+}
+
 .task-status-badge {
   display: inline-flex;
   align-items: center;
@@ -479,6 +498,17 @@ textarea {
 .task-status-badge .status-dot {
   width: 8px;
   height: 8px;
+}
+
+.task-idle-label {
+  color: var(--warning);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+}
+
+.status-dot.pulsing {
+  animation: pulse-dot 1.6s ease-in-out infinite;
 }
 
 .task-status-badge.active {
@@ -603,6 +633,16 @@ textarea {
 .timer-actions {
   justify-content: center;
   flex-wrap: wrap;
+}
+
+.workspace-activity {
+  margin-top: -4px;
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.workspace-activity p {
+  margin: 4px 0;
 }
 
 .workspace-metadata {
@@ -761,6 +801,17 @@ textarea {
   display: grid;
   gap: 18px;
   margin-bottom: 14px;
+}
+
+.insight-block {
+  display: grid;
+  gap: 8px;
+  padding-top: 2px;
+  border-top: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.insight-block p {
+  margin: 0;
 }
 
 .assistant-context-row {
@@ -940,6 +991,12 @@ textarea {
 
 ::-webkit-scrollbar {
   width: 10px;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.5; }
 }
 
 ::-webkit-scrollbar-thumb {
